@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 if [ -f /etc/default/netconsole ]; then
 	. /etc/default/netconsole
