@@ -54,13 +54,13 @@ if [ $? -gt 0 ]; then
 fi
 
 # search IPv4 addresses on network interfaces
-addresses_string=`ip address show| grep -E '^[[:blank:]]+inet[[:blank:]]+'| awk '$NF!="lo" {print $0}'`
-addresses=`echo "$addresses_string"| awk '{print $2}'`
+addresses_string=$(ip address show| grep -E '^[[:blank:]]+inet[[:blank:]]+'| awk '$NF!="lo" {print $0}')
+addresses=$(echo "$addresses_string"| awk '{print $2}')
 
 for address in $addresses; do
-	interface=`echo "$addresses_string"| awk -v a="$address" '$2=a {print $NF}'`
-	ip_addr=`echo $address| cut -d '/' -f1`
-	netmask=`echo $address| cut -d '/' -f2`
+	interface=$(echo "$addresses_string" | awk -v a="$address" '$2=a {print $NF}')
+	ip_addr=$(echo $address| cut -d '/' -f1)
+	netmask=$(echo $address| cut -d '/' -f2)
 
 	if [ "$netmask" == "32" ]; then
 		# skip /32 addresses
@@ -87,15 +87,15 @@ for address in $addresses; do
 	# destination to send
 	dst_port=$NETCONSOLE_DST_PORT
 	if [ "$NETCONSOLE_DST_IP" == "broadcast" ] || [ "$NETCONSOLE_DST_IP" == "BROADCAST" ]; then
-	        address_int=`ipv4_to_i $ip_addr`
-		netmask_int=`get_bit_mask $netmask`
-		dst_ip=`i_to_ipv4 $(($address_int|$netmask_int))`
+	        address_int=$(ipv4_to_i $ip_addr)
+		netmask_int=$(get_bit_mask $netmask)
+		dst_ip=$(i_to_ipv4 $(($address_int|$netmask_int)))
 		dst_mac="ff:ff:ff:ff:ff:ff"
 	else
                 dst_ip="$NETCONSOLE_DST_IP"
 		if [ "$NETCONSOLE_DST_MAC" == "auto" ] || [ "$NETCONSOLE_DST_MAC" == "AUTO" ]; then
 			# determine MAC address of destination
-			dst_mac=`arping -w 3 -c 1 -I $interface $dst_ip 2>/dev/null| grep -E "^Unicast reply from $dst_ip"| awk '{print $5}' 2>/dev/null| tr -d '[]'`
+			dst_mac=$(arping -w 3 -c 1 -I $interface $dst_ip 2>/dev/null| grep -E "^Unicast reply from $dst_ip"| awk '{print $5}' 2>/dev/null| tr -d '[]')
 		else
 			dst_mac="$NETCONSOLE_DST_MAC"
 		fi
