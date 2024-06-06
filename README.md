@@ -18,6 +18,9 @@ Example:
 ...
 ```
 
+# Requirements
+The script now requires the [jq](https://jqlang.github.io/jq/) tool. It already required bash by default, but I'll see if I can reduce it to working with the POSIX syntax in the future.
+
 # Configuration
 All configuration parameters and their descriptions are stored in the
 /etc/default/netconsole file.
