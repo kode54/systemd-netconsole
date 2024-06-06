@@ -54,18 +54,19 @@ if [ $? -gt 0 ]; then
 fi
 
 # search IPv4 addresses on network interfaces
-addresses_string=$(ip address show| grep -E '^[[:blank:]]+inet[[:blank:]]+'| awk '$NF!="lo" {print $0}')
-addresses=$(echo "$addresses_string"| awk '{print $2}')
+addresses_string=$(ip -json address show| jq 'map_values(select(.link_type == "ether"))')
+addresses=$(echo $addresses_string| jq -r '.[].addr_info | map_values(select(.family == "inet")) | select(length > 0) | .[] | "\(.local)/\(.prefixlen)"')
 
 for address in $addresses; do
-	interface=$(echo "$addresses_string" | awk -v a="$address" '$2=a {print $NF}')
-	ip_addr=$(echo $address| cut -d '/' -f1)
 	netmask=$(echo $address| cut -d '/' -f2)
 
 	if [ "$netmask" == "32" ]; then
 		# skip /32 addresses
 		continue;
 	fi
+
+	ip_addr=$(echo $address| cut -d '/' -f1)
+	interface=$(echo $addresses_string| jq -r 'map_values(select(.addr_info[].local == "'"$ip_addr"'")) | .[].ifname')
 
 	if [ "$NETCONSOLE_IF" != "auto" ] && [ "$NETCONSOLE_IF" != "AUTO" ] && [ "$interface" != "$NETCONSOLE_IF" ]; then
 		# skip this address/interface
