@@ -42,7 +42,9 @@ function get_bit_mask() {
 # clear all dynamic configuration if exists
 find /sys/kernel/config/netconsole -maxdepth 1 -type d -delete 2>/dev/null
 # unload module if it was already loaded
-rmmod netconsole
+if lsmod | grep -wq netconsole; then
+	rmmod netconsole
+fi
 # load configfs and netconsole module
 modprobe configfs
 modprobe netconsole
