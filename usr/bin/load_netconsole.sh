@@ -58,7 +58,7 @@ addresses_string=`ip address show| grep -E '^[[:blank:]]+inet[[:blank:]]+'| awk 
 addresses=`echo "$addresses_string"| awk '{print $2}'`
 
 for address in $addresses; do
-	interface=`echo $addresses_string| awk -v a="$address" '$2=a {print $NF}'`
+	interface=`echo "$addresses_string"| awk -v a="$address" '$2=a {print $NF}'`
 	ip_addr=`echo $address| cut -d '/' -f1`
 	netmask=`echo $address| cut -d '/' -f2`
 
