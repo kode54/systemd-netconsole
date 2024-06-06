@@ -48,13 +48,13 @@ modprobe configfs
 modprobe netconsole
 
 # check whether configfs was already mounted
-cat /proc/mounts| egrep -q '^configfs /sys/kernel/config configfs'
+cat /proc/mounts| grep -E -q '^configfs /sys/kernel/config configfs'
 if [ $? -gt 0 ]; then
 	mount none -t configfs /sys/kernel/config
 fi
 
 # search IPv4 addresses on network interfaces
-addresses_string=`ip address show| egrep '^[[:blank:]]+inet[[:blank:]]+'| awk '$NF!="lo" {print $0}'`
+addresses_string=`ip address show| grep -E '^[[:blank:]]+inet[[:blank:]]+'| awk '$NF!="lo" {print $0}'`
 addresses=`echo "$addresses_string"| awk '{print $2}'`
 
 for address in $addresses; do
@@ -95,7 +95,7 @@ for address in $addresses; do
                 dst_ip="$NETCONSOLE_DST_IP"
 		if [ "$NETCONSOLE_DST_MAC" == "auto" ] || [ "$NETCONSOLE_DST_MAC" == "AUTO" ]; then
 			# determine MAC address of destination
-			dst_mac=`arping -w 3 -c 1 -I $interface $dst_ip 2>/dev/null| egrep "^Unicast reply from $dst_ip"| awk '{print $5}' 2>/dev/null| tr -d '[]'`
+			dst_mac=`arping -w 3 -c 1 -I $interface $dst_ip 2>/dev/null| grep -E "^Unicast reply from $dst_ip"| awk '{print $5}' 2>/dev/null| tr -d '[]'`
 		else
 			dst_mac="$NETCONSOLE_DST_MAC"
 		fi
