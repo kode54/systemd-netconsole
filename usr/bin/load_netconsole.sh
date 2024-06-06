@@ -77,22 +77,22 @@ for address in $addresses; do
 		src_ip=""
 		src_port=""
 	elif [ "$NETCONSOLE_SRC_IP" == "auto" ] || [ "$NETCONSOLE_SRC_IP" == "AUTO" ]; then
-                src_ip="$ip_addr"
-                src_port="$NETCONSOLE_SRC_PORT"
+		src_ip="$ip_addr"
+		src_port="$NETCONSOLE_SRC_PORT"
 	else
-                src_ip="$NETCONSOLE_SRC_IP"
-                src_port="$NETCONSOLE_SRC_PORT"
+		src_ip="$NETCONSOLE_SRC_IP"
+		src_port="$NETCONSOLE_SRC_PORT"
 	fi
 
 	# destination to send
 	dst_port=$NETCONSOLE_DST_PORT
 	if [ "$NETCONSOLE_DST_IP" == "broadcast" ] || [ "$NETCONSOLE_DST_IP" == "BROADCAST" ]; then
-	        address_int=$(ipv4_to_i $ip_addr)
+		address_int=$(ipv4_to_i $ip_addr)
 		netmask_int=$(get_bit_mask $netmask)
 		dst_ip=$(i_to_ipv4 $(($address_int|$netmask_int)))
 		dst_mac="ff:ff:ff:ff:ff:ff"
 	else
-                dst_ip="$NETCONSOLE_DST_IP"
+		dst_ip="$NETCONSOLE_DST_IP"
 		if [ "$NETCONSOLE_DST_MAC" == "auto" ] || [ "$NETCONSOLE_DST_MAC" == "AUTO" ]; then
 			# determine MAC address of destination
 			dst_mac=$(arping -w 3 -c 1 -I $interface $dst_ip 2>/dev/null| grep -E "^Unicast reply from $dst_ip"| awk '{print $5}' 2>/dev/null| tr -d '[]')
@@ -109,12 +109,12 @@ for address in $addresses; do
 		echo "$src_ip" > /sys/kernel/config/netconsole/$target/local_ip
 	fi
 	if [ "$src_port" ]; then
-	        echo "$src_port" > /sys/kernel/config/netconsole/$target/local_port
+		echo "$src_port" > /sys/kernel/config/netconsole/$target/local_port
 	fi
         echo "$dst_ip" > /sys/kernel/config/netconsole/$target/remote_ip
         echo "$dst_port" > /sys/kernel/config/netconsole/$target/remote_port
 	if [ "$dst_mac" ]; then
-	        echo "$dst_mac" > /sys/kernel/config/netconsole/$target/remote_mac
+		echo "$dst_mac" > /sys/kernel/config/netconsole/$target/remote_mac
 	fi
-        echo "1" > /sys/kernel/config/netconsole/$target/enabled
+	echo "1" > /sys/kernel/config/netconsole/$target/enabled
 done
